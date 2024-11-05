@@ -16,7 +16,7 @@ class AuthService {
       if (response.statusCode == 201) {
         return "User Registered Succesfully!";
       } else {
-        return "Registration Failed!!";
+        return "Registration Failed with status: ${response.statusCode}";
       }
     } on DioException catch (e) {
       throw Exception(e.response?.data["error"] ?? "Registration Failed");
