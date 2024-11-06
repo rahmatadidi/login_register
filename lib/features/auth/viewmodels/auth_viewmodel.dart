@@ -1,43 +1,51 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:login_register/features/auth/data/auth_service.dart';
+import 'package:logger/logger.dart';
+import 'package:login_register/main.dart';
 
-class AuthViewmodel with ChangeNotifier {
-  final AuthService _authService = AuthService();
-  bool _isLoading = false;
+class AuthViewModel with ChangeNotifier {
+  final Logger _logger = Logger();
+  bool isLoading = false;
 
-  bool get isLoading => _isLoading;
-  Future<void> registerUser(
-    BuildContext context, {
+  Future<void> registerUser({
     required String name,
     required String email,
     required String password,
   }) async {
-    _isLoading = true;
-    notifyListeners();
-
-    String message; // Menyimpan pesan di sini
     try {
-      message = await _authService.registerUser(
-        name: name,
-        email: email,
-        password: password,
-      );
-    } catch (error) {
-      message = 'Error: $error';
-    } finally {
-      _isLoading = false;
+      isLoading = true;
       notifyListeners();
-    }
 
-    // Pastikan Snackbar ditampilkan setelah selesai
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 2),
-        content: Text(message),
-        backgroundColor: message.startsWith('Error') ? Colors.red : Colors.blue,
-      ));
+      // Simulasi proses registrasi
+      await Future.delayed(const Duration(seconds: 2));
+
+      isLoading = false;
+      notifyListeners();
+
+      // Tampilkan SnackBar
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text("User Registered Successfully!"),
+          backgroundColor: Colors.blue,
+        ),
+      );
+
+      // Penundaan sebelum navigasi
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Navigasi ke layar login menggunakan route
+      Navigator.of(scaffoldMessengerKey.currentContext!)
+          .pushReplacementNamed('/login');
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+
+      // Tampilkan SnackBar untuk error
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text("Error: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:login_register/features/auth/presentation/pages/register_page.dart';
+import 'package:login_register/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:login_register/screens/home.dart';
 import 'package:login_register/screens/login.dart';
+import 'package:provider/provider.dart';
+
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyApp(),
+        '/login': (context) => Login(),
+        '/home': (context) => const Home(),
+      },
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,9 +27,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(body: RegisterPage()),
+    return ChangeNotifierProvider(
+      create: (_) => AuthViewModel(),
+      child: const RegisterPage(),
     );
   }
 }

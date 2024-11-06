@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:login_register/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:login_register/screens/login.dart';
 import 'package:login_register/utils/validator.dart';
 import 'package:provider/provider.dart';
-import '../../viewmodels/auth_viewmodel.dart';
 
 class AuthForm extends StatelessWidget {
   AuthForm({super.key});
@@ -12,9 +13,11 @@ class AuthForm extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final Logger _logger = Logger();
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = Provider.of<AuthViewModel>(context);
     return SingleChildScrollView(
       child: SafeArea(
         child: Center(
@@ -84,27 +87,27 @@ class AuthForm extends StatelessWidget {
                     height: 50,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.1,
-                    child: ElevatedButton(
+                      width: MediaQuery.of(context).size.width / 1.1,
+                      child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(15),
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white),
-                        onPressed: () {
-                          final authViewModel = Provider.of<AuthViewmodel>(
-                              context,
-                              listen: false);
-                          if (_formKey.currentState!.validate()) {
-                            authViewModel.registerUser(
-                              context,
-                              name: nameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                            );
-                          }
-                        },
-                        child: const Text("Sign In")),
-                  ),
+                        onPressed: authViewModel.isLoading
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate()) {
+                                  authViewModel.registerUser(
+                                    name: nameController.text,
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                                }
+                              },
+                        child: authViewModel.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text("Register"),
+                      )),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.1,
@@ -136,9 +139,9 @@ class AuthForm extends StatelessWidget {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) => Login()));
                         },
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

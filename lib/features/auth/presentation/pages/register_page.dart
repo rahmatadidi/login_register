@@ -8,21 +8,18 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthViewmodel(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Consumer<AuthViewmodel>(builder: (
-            context,
-            authViewModel,
-            child,
-          ) {
-            return authViewModel.isLoading
-                ? const CircularProgressIndicator()
-                : AuthForm();
-          }),
-        ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Consumer<AuthViewModel>(builder: (
+          context,
+          authViewModel,
+          child,
+        ) {
+          return authViewModel.isLoading
+              ? const CircularProgressIndicator()
+              : AuthForm();
+        }),
       ),
     );
   }
